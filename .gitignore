@@ -1,0 +1,13 @@
+#Python
+_pycache_/
+*.py[cod]
+.venv
+
+#Segredos (authtoken do ngrok, etc.)
+.env
+
+#Chainlit (ficheiros temporários)
+.files
+
+#IDE
+.vscode
