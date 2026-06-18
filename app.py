@@ -1,3 +1,5 @@
+import uuid
+import chainlit as cl
 from langchain_ollama import ChatOllama
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.chat_history import InMemoryChatMessageHistory
@@ -32,3 +34,16 @@ conversa = RunnableWithMessageHistory(
     input_messages_key="input",
     history_messages_key="history",
 )
+
+
+@cl.on_chat_start
+async def responder (mensagem: cl.Message):
+    session_id = cl.user_session.get("session_id")
+    resposta = cl.Message(content="")
+    async for parte in conversa.astream(
+        {"input": mensagem.content},
+        config={"configurable": {"session:id": session_id}},
+    ) :
+
+        await resposta.stream_token(parte.content)
+    await resposta.send()
