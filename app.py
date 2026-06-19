@@ -37,13 +37,20 @@ conversa = RunnableWithMessageHistory(
 
 
 @cl.on_chat_start
-async def responder (mensagem: cl.Message):
+async def iniciar():
+    cl.user_session.set("session_id", str(uuid.uuid4()))
+    await cl.Message(
+        content="Olá! Sou o teu chatbot local. Em que posso ajudar?"
+    ).send()
+
+
+@cl.on_message
+async def responder(mensagem: cl.Message):
     session_id = cl.user_session.get("session_id")
     resposta = cl.Message(content="")
     async for parte in conversa.astream(
         {"input": mensagem.content},
-        config={"configurable": {"session:id": session_id}},
-    ) :
-
+        config={"configurable": {"session_id": session_id}},
+    ):
         await resposta.stream_token(parte.content)
     await resposta.send()
